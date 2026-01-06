@@ -1,0 +1,31 @@
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# Outputs
+outputs/
+data/*.mp4
+data/*.mp3
+*.mp4
+*.mp3
+
+# API credentials
+client_secrets.json
+token.pickle
+token.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Streamlit
+.streamlit/secrets.toml
