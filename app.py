@@ -260,9 +260,9 @@ def main():
 
         col1, col2 = st.columns(2)
         with col1:
-            guest_name = st.text_input("Nom de l'invité(e) (optionnel)")
+            guest_name = st.text_input("Nom de l'invité(e) (optionnel)", key="seo_guest_name")
         with col2:
-            episode_topic = st.text_input("Sujet de l'épisode (optionnel)")
+            episode_topic = st.text_input("Sujet de l'épisode (optionnel)", key="seo_episode_topic")
 
         if st.button("🔍 Générer le package SEO", type="primary", key="generate_seo"):
             if seo_video_file:
@@ -326,9 +326,9 @@ def main():
 
         col1, col2 = st.columns(2)
         with col1:
-            episode_title = st.text_input("Titre de l'épisode (optionnel)")
+            episode_title = st.text_input("Titre de l'épisode (optionnel)", key="transcript_title")
         with col2:
-            episode_guest = st.text_input("Nom de l'invité(e) (optionnel)")
+            episode_guest = st.text_input("Nom de l'invité(e) (optionnel)", key="transcript_guest")
 
         if st.button("📝 Générer le transcript nettoyé", type="primary", key="generate_transcript"):
             if transcript_video_file:
@@ -401,13 +401,15 @@ def main():
 
         guest_name_prep = st.text_input(
             "Nom de l'invité(e) à préparer",
-            placeholder="Ex: Michel Houellebecq"
+            placeholder="Ex: Michel Houellebecq",
+            key="prep_guest_name"
         )
 
         additional_context = st.text_area(
             "Contexte additionnel (optionnel)",
             placeholder="Ex: Focus sur son dernier roman, controverses récentes, etc.",
-            height=100
+            height=100,
+            key="prep_additional_context"
         )
 
         if st.button("📚 Générer le guide de préparation", type="primary", key="generate_prep"):
