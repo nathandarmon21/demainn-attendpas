@@ -98,16 +98,16 @@ IMPORTANT: Return ONLY the JSON array, nothing else. Ensure all {num_clips} clip
         generated_clips = []
 
         for i, clip in enumerate(clip_suggestions):
-            print(f"\n🎥 Generating clip {i+1}/{len(clip_suggestions)}: {clip['title']}")
+            print(f"\n🎥 Generating clip {i+1}/{len(clip_suggestions)}: {clip.get('title', 'Untitled')}")
 
-            output_filename = f"clip_{i+1}_{clip['type']}.mp4"
+            output_filename = f"clip_{i+1}_{clip.get('type', 'clip')}.mp4"
             output_path = os.path.join(output_dir, output_filename)
 
             success = self.video_processor.create_clip_with_captions(
                 video_path=video_path,
-                start_time=clip['start_time'],
-                end_time=clip['end_time'],
-                caption_text=clip['caption'],
+                start_time=clip.get('start_time', 0),
+                end_time=clip.get('end_time', 10),
+                caption_text=clip.get('caption', ''),
                 output_path=output_path
             )
 
@@ -129,26 +129,26 @@ IMPORTANT: Return ONLY the JSON array, nothing else. Ensure all {num_clips} clip
         instructions = []
 
         for i, clip_data in enumerate(generated_clips):
-            clip = clip_data['clip_info']
+            clip = clip_data.get('clip_info', {})
 
             post_instruction = f"""
 ═══════════════════════════════════════════
-CLIP {i+1}: {clip['title']}
+CLIP {i+1}: {clip.get('title', 'Untitled')}
 ═══════════════════════════════════════════
 
-📁 FILE: {clip_data['file_path']}
-🎯 TYPE: {clip['type']}
+📁 FILE: {clip_data.get('file_path', 'N/A')}
+🎯 TYPE: {clip.get('type', 'N/A')}
 
 💬 QUOTE:
-"{clip['quote']}"
+"{clip.get('quote', 'N/A')}"
 
 📱 YOUTUBE SHORTS TITLE:
-{clip['title']}
+{clip.get('title', 'Untitled')}
 
 📝 YOUTUBE DESCRIPTION:
-{clip['title']}
+{clip.get('title', 'Untitled')}
 
-{' '.join(clip['hashtags'])}
+{' '.join(clip.get('hashtags', []))}
 
 Écoutez l'épisode complet sur toutes les plateformes de podcast 🎧
 #DemainNAttendPas #Podcast #PodcastFrançais
@@ -156,9 +156,9 @@ CLIP {i+1}: {clip['title']}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📱 INSTAGRAM REEL CAPTION:
-{clip['caption']}
+{clip.get('caption', 'N/A')}
 
-{' '.join(clip['hashtags'])}
+{' '.join(clip.get('hashtags', []))}
 
 Épisode complet disponible sur toutes les plateformes 🎧
 #DemainNAttendPas #PodcastFrançais #Reels
@@ -166,7 +166,7 @@ CLIP {i+1}: {clip['title']}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 WHY THIS WORKS:
-{clip['reasoning']}
+{clip.get('reasoning', 'N/A')}
 
 """
             instructions.append(post_instruction)

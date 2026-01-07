@@ -308,12 +308,13 @@ Return ONLY valid JSON, no additional text."""
 
 """
         for i, thumb in enumerate(seo_package.get('thumbnails', []), 1):
-            mins = int(thumb['timestamp'] // 60)
-            secs = int(thumb['timestamp'] % 60)
+            timestamp = thumb.get('timestamp', 0)
+            mins = int(timestamp // 60)
+            secs = int(timestamp % 60)
             output += f"{i}. Timestamp: {mins}:{secs:02d}\n"
-            output += f"   Description: {thumb['description']}\n"
-            output += f"   Text Overlay: \"{thumb['text_overlay']}\"\n"
-            output += f"   Why: {thumb['why_compelling']}\n\n"
+            output += f"   Description: {thumb.get('description', 'N/A')}\n"
+            output += f"   Text Overlay: \"{thumb.get('text_overlay', 'N/A')}\"\n"
+            output += f"   Why: {thumb.get('why_compelling', 'N/A')}\n\n"
 
         output += f"""━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📱 LINKEDIN POST (Delphine Darmon Style)

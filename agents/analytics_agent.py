@@ -196,9 +196,9 @@ Return ONLY valid JSON."""
 
 """
         for i, ep in enumerate(analysis.get('top_performers', []), 1):
-            output += f"{i}. {ep['episode']}\n"
-            output += f"   📊 Metrics: {ep['metrics']}\n"
-            output += f"   💡 Why: {ep['why_successful']}\n\n"
+            output += f"{i}. {ep.get('episode', 'Unknown episode')}\n"
+            output += f"   📊 Metrics: {ep.get('metrics', 'N/A')}\n"
+            output += f"   💡 Why: {ep.get('why_successful', 'No description')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📉 UNDERPERFORMING EPISODES
@@ -206,9 +206,9 @@ Return ONLY valid JSON."""
 
 """
         for i, ep in enumerate(analysis.get('underperformers', []), 1):
-            output += f"{i}. {ep['episode']}\n"
-            output += f"   📊 Metrics: {ep['metrics']}\n"
-            output += f"   💡 Why: {ep['why_successful']}\n\n"
+            output += f"{i}. {ep.get('episode', 'Unknown episode')}\n"
+            output += f"   📊 Metrics: {ep.get('metrics', 'N/A')}\n"
+            output += f"   💡 Why: {ep.get('why_successful', 'No description')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💬 ENGAGEMENT INSIGHTS
@@ -216,9 +216,9 @@ Return ONLY valid JSON."""
 
 """
         for i, insight in enumerate(analysis.get('engagement_insights', []), 1):
-            output += f"{i}. {insight['pattern']}\n"
-            output += f"   📊 Evidence: {insight['evidence']}\n"
-            output += f"   💡 Implication: {insight['implication']}\n\n"
+            output += f"{i}. {insight.get('pattern', 'Pattern')}\n"
+            output += f"   📊 Evidence: {insight.get('evidence', 'N/A')}\n"
+            output += f"   💡 Implication: {insight.get('implication', 'No description')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 👥 AUDIENCE INSIGHTS
@@ -226,9 +226,9 @@ Return ONLY valid JSON."""
 
 """
         for i, insight in enumerate(analysis.get('audience_insights', []), 1):
-            output += f"{i}. {insight['pattern']}\n"
-            output += f"   📊 Evidence: {insight['evidence']}\n"
-            output += f"   💡 Implication: {insight['implication']}\n\n"
+            output += f"{i}. {insight.get('pattern', 'Pattern')}\n"
+            output += f"   📊 Evidence: {insight.get('evidence', 'N/A')}\n"
+            output += f"   💡 Implication: {insight.get('implication', 'No description')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎯 CONTENT RECOMMENDATIONS
@@ -236,9 +236,9 @@ Return ONLY valid JSON."""
 
 """
         for i, rec in enumerate(analysis.get('content_recommendations', []), 1):
-            priority_emoji = "🔴" if rec['priority'] == "HIGH" else "🟡" if rec['priority'] == "MEDIUM" else "🟢"
-            output += f"{i}. {priority_emoji} {rec['recommendation']}\n"
-            output += f"   💡 Rationale: {rec['rationale']}\n\n"
+            priority_emoji = "🔴" if rec.get('priority') == "HIGH" else "🟡" if rec.get('priority') == "MEDIUM" else "🟢"
+            output += f"{i}. {priority_emoji} {rec.get('recommendation', 'Recommendation')}\n"
+            output += f"   💡 Rationale: {rec.get('rationale', 'No description')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚡ OPTIMIZATION OPPORTUNITIES
@@ -246,9 +246,9 @@ Return ONLY valid JSON."""
 
 """
         for i, opp in enumerate(analysis.get('optimization_opportunities', []), 1):
-            priority_emoji = "🔴" if opp['priority'] == "HIGH" else "🟡" if opp['priority'] == "MEDIUM" else "🟢"
-            output += f"{i}. {priority_emoji} {opp['recommendation']}\n"
-            output += f"   💡 Rationale: {opp['rationale']}\n\n"
+            priority_emoji = "🔴" if opp.get('priority') == "HIGH" else "🟡" if opp.get('priority') == "MEDIUM" else "🟢"
+            output += f"{i}. {priority_emoji} {opp.get('recommendation', 'Recommendation')}\n"
+            output += f"   💡 Rationale: {opp.get('rationale', 'No description')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🔍 SEO & DISCOVERY INSIGHTS
@@ -256,9 +256,9 @@ Return ONLY valid JSON."""
 
 """
         for i, seo in enumerate(analysis.get('seo_insights', []), 1):
-            output += f"{i}. {seo['pattern']}\n"
-            output += f"   📊 Evidence: {seo['evidence']}\n"
-            output += f"   💡 Implication: {seo['implication']}\n\n"
+            output += f"{i}. {seo.get('pattern', 'Pattern')}\n"
+            output += f"   📊 Evidence: {seo.get('evidence', 'N/A')}\n"
+            output += f"   💡 Implication: {seo.get('implication', 'No description')}\n\n"
 
         output += "="*70 + "\n"
         output += "\n🔴 HIGH PRIORITY  🟡 MEDIUM PRIORITY  🟢 LOW PRIORITY\n"

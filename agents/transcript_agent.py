@@ -83,11 +83,11 @@ Return the cleaned transcript directly. No introduction, no explanation - just t
 
 """
             if episode_info.get('title'):
-                output += f"ÉPISODE: {episode_info['title']}\n"
+                output += f"ÉPISODE: {episode_info.get('title', 'N/A')}\n"
             if episode_info.get('guest'):
-                output += f"INVITÉ(E): {episode_info['guest']}\n"
+                output += f"INVITÉ(E): {episode_info.get('guest', 'N/A')}\n"
             if episode_info.get('date'):
-                output += f"DATE: {episode_info['date']}\n"
+                output += f"DATE: {episode_info.get('date', 'N/A')}\n"
 
             output += "\n" + "="*70 + "\n\n"
 
