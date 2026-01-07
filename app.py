@@ -143,7 +143,11 @@ def main():
 
     # Sidebar
     with st.sidebar:
-        st.image("https://via.placeholder.com/300x100/2C3E50/ffffff?text=Demain+N'Attend+Pas", use_container_width=True)
+        # Try to load local logo, fallback to placeholder if not found
+        try:
+            st.image("assets/logo.png", use_container_width=True)
+        except:
+            st.markdown("### 🎙️ Demain N'Attend Pas")
         st.markdown("---")
         st.markdown("### 🤖 Agents disponibles")
         st.markdown("""
