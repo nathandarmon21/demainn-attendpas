@@ -231,7 +231,8 @@ def main():
                             st.text_area(
                                 "Copiez ces instructions pour publier vos clips",
                                 posting_instructions,
-                                height=400
+                                height=400,
+                                key="short_video_instructions"
                             )
 
                         else:
@@ -289,7 +290,8 @@ def main():
                             st.text_area(
                                 "Package SEO complet",
                                 formatted_output,
-                                height=600
+                                height=600,
+                                key="seo_package_output"
                             )
 
                             # Download button for SEO package
@@ -362,7 +364,8 @@ def main():
                             st.text_area(
                                 "Transcript nettoyé",
                                 formatted_output,
-                                height=500
+                                height=500,
+                                key="transcript_cleaned_output"
                             )
 
                             # Download button
@@ -378,7 +381,8 @@ def main():
                                 st.text_area(
                                     "Transcript brut",
                                     raw_transcript,
-                                    height=400
+                                    height=400,
+                                    key="transcript_raw_output"
                                 )
 
                         else:
@@ -430,7 +434,8 @@ def main():
                             st.text_area(
                                 "Guide de préparation complet",
                                 formatted_guide,
-                                height=600
+                                height=600,
+                                key="prep_guide_output"
                             )
 
                             # Download button
@@ -496,7 +501,8 @@ def main():
                             st.text_area(
                                 "Rapport d'analyse complet",
                                 formatted_report,
-                                height=600
+                                height=600,
+                                key="analytics_report_output"
                             )
 
                             # Download button
