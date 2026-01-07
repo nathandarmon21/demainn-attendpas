@@ -26,6 +26,15 @@ class SEOAgent:
         # Analyze transcript to find impactful moments
         thumbnail_prompt = f"""Based on this podcast transcript for "Demain N'Attend Pas", suggest 2-3 specific moments that would make compelling YouTube thumbnails.
 
+CONTEXT ABOUT "DEMAIN N'ATTEND PAS" THUMBNAIL STYLE:
+This podcast focuses on climate change, biodiversity loss, and social inequalities with engaged entrepreneurs, activist artists, impact investors, and NGO founders. The thumbnails should reflect:
+- Authentic, intimate conversation aesthetic
+- Professional yet approachable visual style
+- Focus on the guest and their impact/message
+- Clean, readable text overlays in French
+- Emphasis on thought-provoking ideas and inspiration
+- Colors and style that align with the podcast's pastel beige branding (#FAF7F2)
+
 TRANSCRIPT:
 {transcript_data['full_text'][:10000]}
 
@@ -34,15 +43,17 @@ VIDEO DURATION: {duration} seconds
 
 For each thumbnail suggestion, identify:
 1. The timestamp (in seconds) of the most visually compelling moment
-2. What the person is likely doing/expressing at that moment
-3. A suggested text overlay for the thumbnail (short, punchy, French)
-4. Why this moment would grab attention
+2. What the person is likely doing/expressing at that moment (authentic, engaged in conversation)
+3. A suggested text overlay for the thumbnail (short, punchy, French, max 6-8 words)
+4. Design notes (colors, layout suggestions that match existing style)
+5. Why this moment would grab attention while staying true to the authentic, impact-focused brand
 
 Look for moments of:
-- Strong emotion or passion
-- Surprise or revelation
-- Emphasis on key points
-- Expressive gestures (if you can infer from speech patterns)
+- Strong emotion or passion about impact/change
+- Surprise or revelation about social/environmental issues
+- Emphasis on solutions and positive action
+- Authentic, intimate conversation moments
+- Expressive engagement with important ideas
 
 Return as JSON:
 {{
@@ -51,7 +62,8 @@ Return as JSON:
       "timestamp": 123.5,
       "description": "Description of the moment",
       "text_overlay": "Texte court et percutant",
-      "why_compelling": "Explanation"
+      "design_notes": "Color palette suggestions, layout ideas, visual style notes",
+      "why_compelling": "Explanation of why this grabs attention while matching brand"
     }}
   ]
 }}
@@ -86,27 +98,32 @@ Key Topics: {', '.join(seo_package.get('keywords_fr', [])[:5])}
 TRANSCRIPT EXCERPT:
 {transcript_data['full_text'][:5000]}
 
-DELPHINE DARMON'S LINKEDIN STYLE:
-- Professional but warm and authentic
-- French language
-- Personal reflection mixed with the guest's insights
-- Often starts with a question or provocative statement
-- 3-5 short paragraphs
-- Highlights what she learned or found fascinating
-- Includes call to action to listen
-- Uses 3-5 relevant hashtags at the end
-- Conversational yet intellectual tone
+DELPHINE DARMON'S EXACT LINKEDIN STYLE (IMPORTANT - MATCH THIS CLOSELY):
+- Always in French
+- HEAVY use of emojis throughout: 🔥, 🎤, 🎧, 🌟, 💪, ➡, 👇, 🙌, and topic-relevant emojis
+- Starts with "Nouvel épisode du podcast Demain n'attend pas" or similar announcement
+- Personal, enthusiastic tone ("Grande joie d'interviewer", "Je suis une fan inconditionnelle")
+- Multiple short paragraphs (3-5 lines each)
+- Uses 🎤 emoji before key talking points the guest shares
+- Emphasizes giving "un haut-parleur à celles et ceux qui s'engagent" (a megaphone to engaged people)
+- Ends with acknowledgments/thanks ("Merci à...")
+- Multiple 👇 emojis before link direction ("👇👇👇Lien vers l'épisode en commentaire 👇👇👇")
+- Uses relevant hashtags at the very end
+- Inspirational and impact-focused language
+- Mix of facts/credentials AND emotional connection to the guest's work
 
 TASK:
-Write a LinkedIn post (300-500 words) announcing this episode in Delphine's style.
+Write a LinkedIn post (350-500 words) announcing this episode in Delphine's EXACT style.
 
-Structure:
-1. Hook - provocative question or personal reflection
-2. Brief introduction of guest and topic
-3. Key insight or moment from conversation
-4. Personal takeaway or why this matters
-5. Call to action
-6. Hashtags (3-5)
+Structure (MUST FOLLOW):
+1. Opening: "Nouvel épisode du podcast Demain n'attend pas 🔥" or variation
+2. Personal intro: Why she's excited/honored to interview this guest
+3. Guest introduction: Their credentials, impact, and what makes them special
+4. Key talking points: 2-3 bullet points with 🎤 emoji of what the guest shares
+5. Personal reflection: What she learned or found fascinating
+6. Link direction: "👇👇👇Lien vers l'épisode en commentaire 👇👇👇" (or similar)
+7. Acknowledgments: "Merci à [guest]" or "Merci à tous ceux qui..."
+8. Hashtags: 3-6 relevant hashtags
 
 Return as JSON:
 {{
@@ -148,50 +165,69 @@ Return ONLY valid JSON."""
         if episode_topic:
             context = f"Topic: {episode_topic}\n" + context
 
-        seo_prompt = f"""You are an SEO expert for "Demain N'attend Pas", a French intellectual podcast. Analyze this episode and create a comprehensive SEO strategy.
+        seo_prompt = f"""You are an SEO expert for "Demain N'attend Pas", a French podcast by Delphine Darmon focusing on climate change, biodiversity loss, and social inequalities. The podcast interviews engaged entrepreneurs, activist artists, impact investors, and NGO founders.
+
+BRAND VOICE & STYLE:
+- Authentic, inspiring, and thought-provoking
+- Impact-focused: giving a voice to those working to improve the world
+- Professional yet warm and accessible
+- French-first content with international appeal
+- Emphasizes solutions and positive action alongside challenges
 
 {context}
 
 TASK:
-Generate a complete SEO package including:
+Generate a complete SEO package that MATCHES the existing "Demain N'Attend Pas" content style across all platforms:
 
 1. EPISODE TITLES (2-3 options):
    - Attention-grabbing titles that would make people click
+   - Match the authentic, impact-focused tone of existing episodes
    - Optimized for French and international audiences
    - Include key themes/guest name
    - 60-80 characters max
 
 2. KEYWORDS & TAGS:
-   - 15-20 highly relevant keywords in French
+   - 15-20 highly relevant keywords in French (focus: climate, biodiversity, social impact, entrepreneurship, innovation)
    - 10-15 keywords in English
    - Mix of broad and specific terms
-   - Consider what people would search for
+   - Consider what people interested in impact/sustainability would search for
 
 3. HASHTAGS:
    - 10-15 hashtags for Instagram/social media
    - Mix of French and English
-   - Include trending and niche tags
+   - Include: #DemainNAttendPas and other impact/sustainability trending tags
+   - Match existing podcast hashtag style
 
-4. PLATFORM-SPECIFIC DESCRIPTIONS:
-   Generate optimized descriptions for each platform:
+4. PLATFORM-SPECIFIC DESCRIPTIONS (IMPORTANT: Base these on the existing style used by Demain N'Attend Pas on each platform):
 
    a) SPOTIFY (max 400 chars, French):
-      - Hook in first line
+      - Match existing Spotify description style for this podcast
+      - Hook in first line about the guest's impact/mission
       - Key topics covered
       - Include keywords naturally
+      - Warm, inviting tone
 
-   b) APPLE PODCASTS (similar to Spotify, French)
+   b) APPLE PODCASTS (similar to Spotify, French):
+      - Professional yet accessible
+      - Focus on guest's credentials and impact
+      - What listeners will learn/discover
 
    c) YOUTUBE (detailed, French):
+      - Match the existing YouTube description style
       - Longer description (500-800 chars)
-      - Timestamps of key moments
-      - Call to action
+      - Guest introduction and their impact work
+      - Key topics and insights discussed
+      - Timestamps of key moments (if applicable)
+      - Call to action to subscribe/listen on other platforms
       - Keywords integrated naturally
+      - Links to podcast platforms
 
    d) INSTAGRAM (short, punchy, French):
       - 150-200 chars
-      - Hook + call to action
-      - Hashtags separate
+      - Match existing Instagram caption style
+      - Emotional hook about the guest or topic
+      - Call to action (listen link in bio)
+      - Hashtags separate (will be added automatically)
 
 5. SEARCH ENGINE OPTIMIZATION:
    - Blog post title suggestion (if creating episode page)
@@ -314,6 +350,7 @@ Return ONLY valid JSON, no additional text."""
             output += f"{i}. Timestamp: {mins}:{secs:02d}\n"
             output += f"   Description: {thumb.get('description', 'N/A')}\n"
             output += f"   Text Overlay: \"{thumb.get('text_overlay', 'N/A')}\"\n"
+            output += f"   Design Notes: {thumb.get('design_notes', 'N/A')}\n"
             output += f"   Why: {thumb.get('why_compelling', 'N/A')}\n\n"
 
         output += f"""━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

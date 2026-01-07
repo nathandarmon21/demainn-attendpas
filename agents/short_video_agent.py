@@ -32,45 +32,60 @@ class ShortVideoAgent:
 
         analysis_prompt = f"""You are analyzing a French podcast episode for "Demain N'attend Pas" to identify the best moments for viral short-form content (YouTube Shorts, Instagram Reels).
 
+CONTEXT ABOUT "DEMAIN N'ATTEND PAS":
+This podcast by Delphine Darmon focuses on climate change, biodiversity loss, and social inequalities. It features biweekly interviews with engaged entrepreneurs, activist artists, impact investors, and NGO founders. The tone is intimate, authentic, and impact-focused - giving a voice to those trying to repair and improve the world.
+
 TRANSCRIPT WITH TIMESTAMPS:
 {segments_text}
 
 TASK:
-Identify the {num_clips} best 10-15 second clips that would work well as social media shorts. For each clip, you must:
+Identify the {num_clips} best clips for social media shorts. For each clip, you must:
 
 1. Select moments that are:
    - Self-contained and make sense without additional context
    - Attention-grabbing in the first 2 seconds
    - A mix of: provocative statements, profound insights, emotionally resonant moments, surprising facts, or controversial takes
-   - Engaging for the French intellectual/cultural audience
+   - Engaging for the French intellectual/cultural audience interested in social and environmental impact
+   - Match the existing "Demain N'Attend Pas" style: authentic, inspiring, thought-provoking
 
-2. Each clip should be 10-15 seconds (no longer, no shorter)
+2. ADAPTIVE CLIP LENGTH (15-60 seconds):
+   - SHORT (15-25 seconds): For punchy statements, provocative quotes, or single powerful ideas that are better delivered quickly
+   - MEDIUM (30-40 seconds): For insights that need a bit more context or build-up
+   - LONG (45-60 seconds): For deeper conversations, emotional stories, or nuanced ideas that require development
+   - Choose the optimal length for EACH clip based on the content - don't make all clips the same length
+   - Err on the shorter side when possible for maximum impact (existing Demain N'Attend Pas shorts tend to be concise)
 
 3. For EACH clip provide:
    - Start timestamp (in seconds)
    - End timestamp (in seconds)
+   - Duration (calculate: end_time - start_time, must be between 15-60 seconds)
    - Exact quote/transcript excerpt
    - Clip type (provocative/insightful/emotional/surprising)
    - Suggested title (compelling, in French, max 100 characters)
    - Caption text to overlay on video (French, max 50 characters, punchy)
    - 3-5 hashtags in French and English
-   - Brief explanation (1 sentence) of why this will perform well
+   - Brief explanation (1 sentence) of why this will perform well and why this specific length is optimal
 
 Return ONLY a valid JSON array with this exact structure:
 [
   {{
     "start_time": 123.5,
-    "end_time": 138.2,
+    "end_time": 143.5,
+    "duration": 20,
     "quote": "exact transcript excerpt",
     "type": "provocative",
     "title": "Titre accrocheur",
     "caption": "Texte court et percutant",
-    "hashtags": ["#DemainNAttendPas", "#Philosophy", "#DeepThoughts"],
-    "reasoning": "Why this clip will perform well"
+    "hashtags": ["#DemainNAttendPas", "#Impact", "#Climat"],
+    "reasoning": "Why this clip will perform well and why 20 seconds is optimal for this content"
   }}
 ]
 
-IMPORTANT: Return ONLY the JSON array, nothing else. Ensure all {num_clips} clips are different and compelling."""
+IMPORTANT:
+- Return ONLY the JSON array, nothing else
+- Ensure all {num_clips} clips are different and compelling
+- Vary the clip lengths based on content - don't make them all the same duration
+- All clips MUST be between 15-60 seconds (verify: end_time - start_time is within this range)"""
 
         response = self.claude.analyze(
             analysis_prompt,

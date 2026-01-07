@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 from agents.short_video_agent import ShortVideoAgent
 from agents.seo_agent import SEOAgent
 from agents.prep_agent import PrepAgent
-from agents.analytics_agent import AnalyticsAgent
 from agents.transcript_agent import TranscriptAgent
 
 # Load environment variables
@@ -51,23 +50,13 @@ st.markdown("""
         font-weight: 300;
     }
 
-    /* Tabs styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 1.5rem;
+    /* Upload section styling */
+    .upload-section {
         background-color: #FFFFFF;
-        padding: 1rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .stTabs [data-baseweb="tab"] {
-        font-size: 1.05rem;
-        font-weight: 600;
-        color: #5D6D7E;
-        padding: 0.75rem 1.5rem;
-        font-family: 'Helvetica Neue', sans-serif;
-    }
-    .stTabs [data-baseweb="tab"]:hover {
-        color: #2C3E50;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        margin-bottom: 2rem;
     }
 
     /* Sidebar */
@@ -103,12 +92,24 @@ st.markdown("""
         border-radius: 8px;
         font-family: 'Helvetica Neue', sans-serif;
     }
+
+    /* Expander styling */
+    .streamlit-expanderHeader {
+        background-color: #FFFFFF;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
 # Initialize session state
 if 'api_keys_set' not in st.session_state:
     st.session_state.api_keys_set = False
+if 'uploaded_video_path' not in st.session_state:
+    st.session_state.uploaded_video_path = None
+if 'uploaded_video_name' not in st.session_state:
+    st.session_state.uploaded_video_name = None
 
 
 def check_api_keys():
@@ -155,53 +156,65 @@ def main():
         - 🔍 **SEO Agent**: Optimiser la découvrabilité
         - 📝 **Transcript Agent**: Nettoyer les transcripts
         - 📚 **Prep Agent**: Préparer les interviews
-        - 📊 **Analytics Agent**: Analyser les performances
         """)
         st.markdown("---")
-        st.info("💡 Sélectionnez un agent dans les onglets ci-dessus")
+        st.info("💡 Téléchargez votre vidéo ci-dessus, puis utilisez les agents ci-dessous")
 
-    # Main tabs
-    tab1, tab2, tab3, tab4, tab5 = st.tabs([
-        "🎬 Short Video",
-        "🔍 SEO",
-        "📝 Transcript",
-        "📚 Prep",
-        "📊 Analytics"
-    ])
+    # ========================================
+    # CENTRALIZED VIDEO UPLOAD SECTION
+    # ========================================
+    st.markdown("## 📤 Télécharger votre épisode")
 
-    # TAB 1: SHORT VIDEO AGENT
-    with tab1:
-        st.header("🎬 Short Video Agent")
-        st.markdown("Identifiez et créez des clips viraux à partir de vos épisodes complets")
+    video_file = st.file_uploader(
+        "Téléchargez votre vidéo ou audio d'épisode (tous les agents utiliseront ce fichier)",
+        type=['mp4', 'mp3', 'mov'],
+        key="centralized_video_upload"
+    )
 
-        video_file = st.file_uploader(
-            "Téléchargez votre vidéo d'épisode (MP4 ou MP3)",
-            type=['mp4', 'mp3', 'mov'],
-            key="short_video_upload"
-        )
+    # Process uploaded video
+    if video_file:
+        # Save to temporary location and store in session state
+        if st.session_state.uploaded_video_name != video_file.name:
+            temp_video_path = f"data/temp_{video_file.name}"
+            os.makedirs("data", exist_ok=True)
 
-        num_clips = st.slider(
-            "Nombre de clips à générer",
-            min_value=4,
-            max_value=10,
-            value=6,
-            help="Le nombre de clips courts à créer"
-        )
+            with open(temp_video_path, "wb") as f:
+                f.write(video_file.read())
 
-        if st.button("🚀 Générer les clips", type="primary", key="generate_clips"):
-            if video_file:
+            st.session_state.uploaded_video_path = temp_video_path
+            st.session_state.uploaded_video_name = video_file.name
+            st.success(f"✅ Vidéo chargée: {video_file.name}")
+        else:
+            st.info(f"📹 Vidéo actuelle: {video_file.name}")
+
+    st.markdown("---")
+
+    # ========================================
+    # AGENT SECTIONS (Only show if video uploaded)
+    # ========================================
+    if st.session_state.uploaded_video_path:
+
+        # ========================================
+        # SHORT VIDEO AGENT
+        # ========================================
+        with st.expander("🎬 Short Video Agent - Créer des clips viraux", expanded=False):
+            st.markdown("Identifiez et créez des clips viraux à partir de votre épisode complet")
+
+            num_clips = st.slider(
+                "Nombre de clips à générer",
+                min_value=4,
+                max_value=10,
+                value=6,
+                help="Le nombre de clips courts à créer"
+            )
+
+            if st.button("🚀 Générer les clips", type="primary", key="generate_clips"):
                 with st.spinner("🎬 Traitement en cours... Cela peut prendre plusieurs minutes."):
-                    # Save uploaded file temporarily
-                    temp_video_path = f"data/temp_{video_file.name}"
-                    os.makedirs("data", exist_ok=True)
-                    with open(temp_video_path, "wb") as f:
-                        f.write(video_file.read())
-
                     try:
                         # Run Short Video Agent
                         agent = ShortVideoAgent()
                         generated_clips, posting_instructions = agent.run_full_pipeline(
-                            temp_video_path,
+                            st.session_state.uploaded_video_path,
                             num_clips=num_clips
                         )
 
@@ -227,7 +240,8 @@ def main():
                                         label=f"📥 Télécharger Clip {i+1}",
                                         data=open(clip_data['file_path'], 'rb').read(),
                                         file_name=f"clip_{i+1}.mp4",
-                                        mime="video/mp4"
+                                        mime="video/mp4",
+                                        key=f"download_clip_{i}"
                                     )
 
                             # Display posting instructions
@@ -245,44 +259,25 @@ def main():
                     except Exception as e:
                         st.error(f"❌ Erreur: {str(e)}")
 
-                    finally:
-                        # Cleanup
-                        if os.path.exists(temp_video_path):
-                            os.remove(temp_video_path)
-            else:
-                st.warning("⚠️ Veuillez télécharger une vidéo d'abord")
+        # ========================================
+        # SEO AGENT
+        # ========================================
+        with st.expander("🔍 SEO Agent - Optimiser la découvrabilité", expanded=False):
+            st.markdown("Optimisez la découvrabilité de votre épisode sur toutes les plateformes")
 
-    # TAB 2: SEO AGENT
-    with tab2:
-        st.header("🔍 SEO Agent")
-        st.markdown("Optimisez la découvrabilité de vos épisodes sur toutes les plateformes")
+            col1, col2 = st.columns(2)
+            with col1:
+                guest_name = st.text_input("Nom de l'invité(e) (optionnel)", key="seo_guest_name")
+            with col2:
+                episode_topic = st.text_input("Sujet de l'épisode (optionnel)", key="seo_episode_topic")
 
-        seo_video_file = st.file_uploader(
-            "Téléchargez votre vidéo/audio d'épisode",
-            type=['mp4', 'mp3', 'mov'],
-            key="seo_video_upload"
-        )
-
-        col1, col2 = st.columns(2)
-        with col1:
-            guest_name = st.text_input("Nom de l'invité(e) (optionnel)", key="seo_guest_name")
-        with col2:
-            episode_topic = st.text_input("Sujet de l'épisode (optionnel)", key="seo_episode_topic")
-
-        if st.button("🔍 Générer le package SEO", type="primary", key="generate_seo"):
-            if seo_video_file:
+            if st.button("🔍 Générer le package SEO", type="primary", key="generate_seo"):
                 with st.spinner("🔍 Analyse SEO en cours..."):
-                    # Save uploaded file temporarily
-                    temp_video_path = f"data/temp_{seo_video_file.name}"
-                    os.makedirs("data", exist_ok=True)
-                    with open(temp_video_path, "wb") as f:
-                        f.write(seo_video_file.read())
-
                     try:
                         # Run SEO Agent
                         agent = SEOAgent()
                         formatted_output, seo_package = agent.run_full_analysis(
-                            temp_video_path,
+                            st.session_state.uploaded_video_path,
                             guest_name=guest_name if guest_name else None,
                             episode_topic=episode_topic if episode_topic else None
                         )
@@ -312,39 +307,20 @@ def main():
                     except Exception as e:
                         st.error(f"❌ Erreur: {str(e)}")
 
-                    finally:
-                        # Cleanup
-                        if os.path.exists(temp_video_path):
-                            os.remove(temp_video_path)
-            else:
-                st.warning("⚠️ Veuillez télécharger une vidéo d'abord")
+        # ========================================
+        # TRANSCRIPT AGENT
+        # ========================================
+        with st.expander("📝 Transcript Agent - Nettoyer les transcripts", expanded=False):
+            st.markdown("Générez un transcript propre et professionnel, prêt pour publication")
 
-    # TAB 3: TRANSCRIPT AGENT
-    with tab3:
-        st.header("📝 Transcript Agent")
-        st.markdown("Générez un transcript propre et professionnel, prêt pour publication")
+            col1, col2 = st.columns(2)
+            with col1:
+                episode_title = st.text_input("Titre de l'épisode (optionnel)", key="transcript_title")
+            with col2:
+                episode_guest = st.text_input("Nom de l'invité(e) (optionnel)", key="transcript_guest")
 
-        transcript_video_file = st.file_uploader(
-            "Téléchargez votre vidéo/audio d'épisode",
-            type=['mp4', 'mp3', 'mov'],
-            key="transcript_video_upload"
-        )
-
-        col1, col2 = st.columns(2)
-        with col1:
-            episode_title = st.text_input("Titre de l'épisode (optionnel)", key="transcript_title")
-        with col2:
-            episode_guest = st.text_input("Nom de l'invité(e) (optionnel)", key="transcript_guest")
-
-        if st.button("📝 Générer le transcript nettoyé", type="primary", key="generate_transcript"):
-            if transcript_video_file:
+            if st.button("📝 Générer le transcript nettoyé", type="primary", key="generate_transcript"):
                 with st.spinner("📝 Transcription et nettoyage en cours..."):
-                    # Save uploaded file temporarily
-                    temp_video_path = f"data/temp_{transcript_video_file.name}"
-                    os.makedirs("data", exist_ok=True)
-                    with open(temp_video_path, "wb") as f:
-                        f.write(transcript_video_file.read())
-
                     try:
                         # Run Transcript Agent
                         agent = TranscriptAgent()
@@ -356,7 +332,7 @@ def main():
                             episode_info['guest'] = episode_guest
 
                         formatted_output, cleaned_transcript, raw_transcript = agent.run_full_pipeline(
-                            temp_video_path,
+                            st.session_state.uploaded_video_path,
                             episode_info=episode_info if episode_info else None
                         )
 
@@ -395,155 +371,65 @@ def main():
                     except Exception as e:
                         st.error(f"❌ Erreur: {str(e)}")
 
-                    finally:
-                        # Cleanup
-                        if os.path.exists(temp_video_path):
-                            os.remove(temp_video_path)
-            else:
-                st.warning("⚠️ Veuillez télécharger une vidéo d'abord")
+        # ========================================
+        # PREP AGENT
+        # ========================================
+        with st.expander("📚 Prep Agent - Préparer les interviews", expanded=False):
+            st.markdown("Préparez vos interviews avec des ressources ciblées et prioritisées")
 
-    # TAB 4: PREP AGENT
-    with tab4:
-        st.header("📚 Prep Agent")
-        st.markdown("Préparez vos interviews avec des ressources ciblées et prioritisées")
+            guest_name_prep = st.text_input(
+                "Nom de l'invité(e) à préparer",
+                placeholder="Ex: Michel Houellebecq",
+                key="prep_guest_name"
+            )
 
-        guest_name_prep = st.text_input(
-            "Nom de l'invité(e) à préparer",
-            placeholder="Ex: Michel Houellebecq",
-            key="prep_guest_name"
-        )
+            additional_context = st.text_area(
+                "Contexte additionnel (optionnel)",
+                placeholder="Ex: Focus sur son dernier roman, controverses récentes, etc.",
+                height=100,
+                key="prep_additional_context"
+            )
 
-        additional_context = st.text_area(
-            "Contexte additionnel (optionnel)",
-            placeholder="Ex: Focus sur son dernier roman, controverses récentes, etc.",
-            height=100,
-            key="prep_additional_context"
-        )
-
-        if st.button("📚 Générer le guide de préparation", type="primary", key="generate_prep"):
-            if guest_name_prep:
-                with st.spinner(f"🔍 Recherche en cours sur {guest_name_prep}..."):
-                    try:
-                        # Run Prep Agent
-                        agent = PrepAgent()
-                        formatted_guide, prep_package = agent.run_prep_analysis(
-                            guest_name_prep,
-                            additional_context=additional_context if additional_context else None
-                        )
-
-                        if formatted_guide:
-                            st.success("✅ Guide de préparation généré!")
-
-                            # Display formatted guide
-                            st.text_area(
-                                "Guide de préparation complet",
-                                formatted_guide,
-                                height=600,
-                                key="prep_guide_output"
+            if st.button("📚 Générer le guide de préparation", type="primary", key="generate_prep"):
+                if guest_name_prep:
+                    with st.spinner(f"🔍 Recherche en cours sur {guest_name_prep}..."):
+                        try:
+                            # Run Prep Agent
+                            agent = PrepAgent()
+                            formatted_guide, prep_package = agent.run_prep_analysis(
+                                guest_name_prep,
+                                additional_context=additional_context if additional_context else None
                             )
 
-                            # Download button
-                            st.download_button(
-                                label="📥 Télécharger le guide (JSON)",
-                                data=str(prep_package),
-                                file_name=f"prep_guide_{guest_name_prep.replace(' ', '_')}.json",
-                                mime="application/json"
-                            )
+                            if formatted_guide:
+                                st.success("✅ Guide de préparation généré!")
 
-                        else:
-                            st.error("❌ Échec de la génération du guide")
+                                # Display formatted guide
+                                st.text_area(
+                                    "Guide de préparation complet",
+                                    formatted_guide,
+                                    height=600,
+                                    key="prep_guide_output"
+                                )
 
-                    except Exception as e:
-                        st.error(f"❌ Erreur: {str(e)}")
-            else:
-                st.warning("⚠️ Veuillez entrer le nom d'un invité")
+                                # Download button
+                                st.download_button(
+                                    label="📥 Télécharger le guide (JSON)",
+                                    data=str(prep_package),
+                                    file_name=f"prep_guide_{guest_name_prep.replace(' ', '_')}.json",
+                                    mime="application/json"
+                                )
 
-    # TAB 5: ANALYTICS AGENT
-    with tab5:
-        st.header("📊 Analytics Agent")
-        st.markdown("Analysez les performances de vos épisodes et identifiez des patterns")
+                            else:
+                                st.error("❌ Échec de la génération du guide")
 
-        st.info("💡 Téléchargez vos données analytics depuis Ausha ou YouTube Analytics (format CSV ou JSON)")
+                        except Exception as e:
+                            st.error(f"❌ Erreur: {str(e)}")
+                else:
+                    st.warning("⚠️ Veuillez entrer le nom d'un invité")
 
-        analytics_file = st.file_uploader(
-            "Téléchargez vos données analytics",
-            type=['csv', 'json'],
-            key="analytics_upload"
-        )
-
-        episode_selection = st.radio(
-            "Sélection d'épisodes à analyser",
-            ["Tous les épisodes", "Dernier épisode uniquement", "Sélection manuelle"],
-            horizontal=True
-        )
-
-        if st.button("📊 Analyser les performances", type="primary", key="run_analytics"):
-            if analytics_file:
-                with st.spinner("📊 Analyse en cours..."):
-                    try:
-                        # Save uploaded file
-                        temp_analytics_path = f"data/temp_{analytics_file.name}"
-                        os.makedirs("data", exist_ok=True)
-                        with open(temp_analytics_path, "wb") as f:
-                            f.write(analytics_file.read())
-
-                        # Run Analytics Agent
-                        agent = AnalyticsAgent()
-                        analytics_data = agent.load_analytics_data(file_path=temp_analytics_path)
-
-                        selection_type = "all" if episode_selection == "Tous les épisodes" else "last"
-
-                        formatted_report, analysis = agent.run_analysis(
-                            analytics_data,
-                            episode_selection=selection_type
-                        )
-
-                        if formatted_report:
-                            st.success("✅ Rapport d'analyse généré!")
-
-                            # Display report
-                            st.text_area(
-                                "Rapport d'analyse complet",
-                                formatted_report,
-                                height=600,
-                                key="analytics_report_output"
-                            )
-
-                            # Download button
-                            st.download_button(
-                                label="📥 Télécharger le rapport (JSON)",
-                                data=str(analysis),
-                                file_name="analytics_report.json",
-                                mime="application/json"
-                            )
-
-                        else:
-                            st.error("❌ Échec de l'analyse")
-
-                        # Cleanup
-                        if os.path.exists(temp_analytics_path):
-                            os.remove(temp_analytics_path)
-
-                    except Exception as e:
-                        st.error(f"❌ Erreur: {str(e)}")
-            else:
-                st.warning("⚠️ Veuillez télécharger vos données analytics d'abord")
-
-        # Data format example
-        with st.expander("📋 Format de données attendu"):
-            st.markdown("""
-            **Format CSV/JSON attendu:**
-
-            Vos données doivent inclure des colonnes comme:
-            - `episode_title` ou `title`: Titre de l'épisode
-            - `views` ou `plays`: Nombre de vues/lectures
-            - `completion_rate`: Taux de complétion (%)
-            - `shares`: Nombre de partages
-            - `publish_date`: Date de publication
-            - Toute autre métrique pertinente
-
-            L'agent s'adaptera automatiquement à votre structure de données.
-            """)
+    else:
+        st.info("👆 Veuillez d'abord télécharger une vidéo ci-dessus pour utiliser les agents")
 
 
 if __name__ == "__main__":
