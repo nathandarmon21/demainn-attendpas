@@ -135,10 +135,10 @@ Return ONLY valid JSON."""
 
 """
         for i, book in enumerate(prep_package.get('books', []), 1):
-            priority_emoji = "🔴" if book['priority'] == "ESSENTIAL" else "🟡" if book['priority'] == "HIGH" else "🟢"
-            output += f"{i}. {priority_emoji} {book['title']} ({book.get('language', 'N/A')})\n"
-            output += f"   ⏱️  Time: {book['time_commitment']}\n"
-            output += f"   💡 Why: {book['why_read']}\n\n"
+            priority_emoji = "🔴" if book.get('priority') == "ESSENTIAL" else "🟡" if book.get('priority') == "HIGH" else "🟢"
+            output += f"{i}. {priority_emoji} {book.get('title', 'Untitled')} ({book.get('language', 'N/A')})\n"
+            output += f"   ⏱️  Time: {book.get('time_commitment', 'N/A')}\n"
+            output += f"   💡 Why: {book.get('why_read', 'No description available')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📝 KEY ESSAYS & ARTICLES
@@ -146,10 +146,10 @@ Return ONLY valid JSON."""
 
 """
         for i, article in enumerate(prep_package.get('essays_articles', []), 1):
-            priority_emoji = "🔴" if article['priority'] == "ESSENTIAL" else "🟡" if article['priority'] == "HIGH" else "🟢"
-            output += f"{i}. {priority_emoji} {article['title']}\n"
-            output += f"   ⏱️  Time: {article['time_commitment']}\n"
-            output += f"   💡 Why: {article['why_read']}\n\n"
+            priority_emoji = "🔴" if article.get('priority') == "ESSENTIAL" else "🟡" if article.get('priority') == "HIGH" else "🟢"
+            output += f"{i}. {priority_emoji} {article.get('title', 'Untitled')}\n"
+            output += f"   ⏱️  Time: {article.get('time_commitment', 'N/A')}\n"
+            output += f"   💡 Why: {article.get('why_read', 'No description available')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎤 PREVIOUS INTERVIEWS & TALKS
@@ -157,10 +157,10 @@ Return ONLY valid JSON."""
 
 """
         for i, interview in enumerate(prep_package.get('interviews_talks', []), 1):
-            priority_emoji = "🔴" if interview['priority'] == "ESSENTIAL" else "🟡" if interview['priority'] == "HIGH" else "🟢"
-            output += f"{i}. {priority_emoji} {interview['title']}\n"
-            output += f"   ⏱️  Time: {interview['time_commitment']}\n"
-            output += f"   💡 Why: {interview['why_read']}\n\n"
+            priority_emoji = "🔴" if interview.get('priority') == "ESSENTIAL" else "🟡" if interview.get('priority') == "HIGH" else "🟢"
+            output += f"{i}. {priority_emoji} {interview.get('title', 'Untitled')}\n"
+            output += f"   ⏱️  Time: {interview.get('time_commitment', 'N/A')}\n"
+            output += f"   💡 Why: {interview.get('why_read', 'No description available')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎥 VIDEOS & DOCUMENTARIES
@@ -168,10 +168,10 @@ Return ONLY valid JSON."""
 
 """
         for i, video in enumerate(prep_package.get('videos', []), 1):
-            priority_emoji = "🔴" if video['priority'] == "ESSENTIAL" else "🟡" if video['priority'] == "HIGH" else "🟢"
-            output += f"{i}. {priority_emoji} {video['title']}\n"
-            output += f"   ⏱️  Time: {video['time_commitment']}\n"
-            output += f"   💡 Why: {video['why_read']}\n\n"
+            priority_emoji = "🔴" if video.get('priority') == "ESSENTIAL" else "🟡" if video.get('priority') == "HIGH" else "🟢"
+            output += f"{i}. {priority_emoji} {video.get('title', 'Untitled')}\n"
+            output += f"   ⏱️  Time: {video.get('time_commitment', 'N/A')}\n"
+            output += f"   💡 Why: {video.get('why_read', 'No description available')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 🎧 PODCASTS & AUDIO
@@ -179,10 +179,10 @@ Return ONLY valid JSON."""
 
 """
         for i, podcast in enumerate(prep_package.get('podcasts', []), 1):
-            priority_emoji = "🔴" if podcast['priority'] == "ESSENTIAL" else "🟡" if podcast['priority'] == "HIGH" else "🟢"
-            output += f"{i}. {priority_emoji} {podcast['title']}\n"
-            output += f"   ⏱️  Time: {podcast['time_commitment']}\n"
-            output += f"   💡 Why: {podcast['why_read']}\n\n"
+            priority_emoji = "🔴" if podcast.get('priority') == "ESSENTIAL" else "🟡" if podcast.get('priority') == "HIGH" else "🟢"
+            output += f"{i}. {priority_emoji} {podcast.get('title', 'Untitled')}\n"
+            output += f"   ⏱️  Time: {podcast.get('time_commitment', 'N/A')}\n"
+            output += f"   💡 Why: {podcast.get('why_read', 'No description available')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📖 BACKGROUND RESEARCH
@@ -190,10 +190,10 @@ Return ONLY valid JSON."""
 
 """
         for i, bg in enumerate(prep_package.get('background_research', []), 1):
-            priority_emoji = "🔴" if bg['priority'] == "ESSENTIAL" else "🟡" if bg['priority'] == "HIGH" else "🟢"
-            output += f"{i}. {priority_emoji} {bg['title']}\n"
-            output += f"   ⏱️  Time: {bg['time_commitment']}\n"
-            output += f"   💡 Why: {bg['why_read']}\n\n"
+            priority_emoji = "🔴" if bg.get('priority') == "ESSENTIAL" else "🟡" if bg.get('priority') == "HIGH" else "🟢"
+            output += f"{i}. {priority_emoji} {bg.get('title', 'Untitled')}\n"
+            output += f"   ⏱️  Time: {bg.get('time_commitment', 'N/A')}\n"
+            output += f"   💡 Why: {bg.get('why_read', 'No description available')}\n\n"
 
         output += """━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💡 SUGGESTED INTERVIEW ANGLES
@@ -201,8 +201,8 @@ Return ONLY valid JSON."""
 
 """
         for i, angle in enumerate(prep_package.get('interview_angles', []), 1):
-            output += f"{i}. {angle['topic']}\n"
-            output += f"   💭 {angle['why_interesting']}\n\n"
+            output += f"{i}. {angle.get('topic', 'Topic')}\n"
+            output += f"   💭 {angle.get('why_interesting', 'No description available')}\n\n"
 
         output += "="*70 + "\n"
         output += "\n🔴 ESSENTIAL  🟡 HIGH PRIORITY  🟢 MEDIUM PRIORITY\n"
