@@ -12,6 +12,7 @@ from agents.short_video_agent import ShortVideoAgent
 from agents.seo_agent import SEOAgent
 from agents.prep_agent import PrepAgent
 from agents.analytics_agent import AnalyticsAgent
+from agents.transcript_agent import TranscriptAgent
 
 # Load environment variables
 load_dotenv()
@@ -27,25 +28,80 @@ st.set_page_config(
 # Custom CSS for better styling
 st.markdown("""
 <style>
+    /* Main background */
+    .stApp {
+        background-color: #FAF7F2;
+    }
+
+    /* Headers */
     .main-header {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #1f77b4;
+        font-size: 2.8rem;
+        font-weight: 700;
+        color: #2C3E50;
         text-align: center;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
+        font-family: 'Georgia', serif;
     }
     .sub-header {
-        font-size: 1.2rem;
+        font-size: 1.3rem;
         text-align: center;
-        color: #666;
-        margin-bottom: 2rem;
+        color: #7F8C8D;
+        margin-bottom: 2.5rem;
+        font-family: 'Helvetica Neue', sans-serif;
+        font-weight: 300;
     }
+
+    /* Tabs styling */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 2rem;
+        gap: 1.5rem;
+        background-color: #FFFFFF;
+        padding: 1rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
     .stTabs [data-baseweb="tab"] {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
         font-weight: 600;
+        color: #5D6D7E;
+        padding: 0.75rem 1.5rem;
+        font-family: 'Helvetica Neue', sans-serif;
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        color: #2C3E50;
+    }
+
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background-color: #FFFFFF;
+        border-right: 1px solid #E8E4DE;
+    }
+
+    /* Buttons */
+    .stButton>button {
+        background-color: #3498DB;
+        color: white;
+        border-radius: 8px;
+        font-weight: 600;
+        border: none;
+        padding: 0.6rem 1.5rem;
+        font-family: 'Helvetica Neue', sans-serif;
+    }
+    .stButton>button:hover {
+        background-color: #2980B9;
+    }
+
+    /* Text areas and inputs */
+    .stTextArea textarea, .stTextInput input {
+        font-family: 'Courier New', monospace;
+        background-color: #FFFFFF;
+        border: 1px solid #D5D8DC;
+        border-radius: 6px;
+    }
+
+    /* Success/Error/Warning boxes */
+    .stSuccess, .stError, .stWarning, .stInfo {
+        border-radius: 8px;
+        font-family: 'Helvetica Neue', sans-serif;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -87,12 +143,13 @@ def main():
 
     # Sidebar
     with st.sidebar:
-        st.image("https://via.placeholder.com/300x100/1f77b4/ffffff?text=Demain+N'Attend+Pas", use_container_width=True)
+        st.image("https://via.placeholder.com/300x100/2C3E50/ffffff?text=Demain+N'Attend+Pas", use_container_width=True)
         st.markdown("---")
         st.markdown("### 🤖 Agents disponibles")
         st.markdown("""
         - 🎬 **Short Video Agent**: Créer des clips viraux
         - 🔍 **SEO Agent**: Optimiser la découvrabilité
+        - 📝 **Transcript Agent**: Nettoyer les transcripts
         - 📚 **Prep Agent**: Préparer les interviews
         - 📊 **Analytics Agent**: Analyser les performances
         """)
@@ -100,9 +157,10 @@ def main():
         st.info("💡 Sélectionnez un agent dans les onglets ci-dessus")
 
     # Main tabs
-    tab1, tab2, tab3, tab4 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
         "🎬 Short Video",
         "🔍 SEO",
+        "📝 Transcript",
         "📚 Prep",
         "📊 Analytics"
     ])
@@ -255,8 +313,89 @@ def main():
             else:
                 st.warning("⚠️ Veuillez télécharger une vidéo d'abord")
 
-    # TAB 3: PREP AGENT
+    # TAB 3: TRANSCRIPT AGENT
     with tab3:
+        st.header("📝 Transcript Agent")
+        st.markdown("Générez un transcript propre et professionnel, prêt pour publication")
+
+        transcript_video_file = st.file_uploader(
+            "Téléchargez votre vidéo/audio d'épisode",
+            type=['mp4', 'mp3', 'mov'],
+            key="transcript_video_upload"
+        )
+
+        col1, col2 = st.columns(2)
+        with col1:
+            episode_title = st.text_input("Titre de l'épisode (optionnel)")
+        with col2:
+            episode_guest = st.text_input("Nom de l'invité(e) (optionnel)")
+
+        if st.button("📝 Générer le transcript nettoyé", type="primary", key="generate_transcript"):
+            if transcript_video_file:
+                with st.spinner("📝 Transcription et nettoyage en cours..."):
+                    # Save uploaded file temporarily
+                    temp_video_path = f"data/temp_{transcript_video_file.name}"
+                    os.makedirs("data", exist_ok=True)
+                    with open(temp_video_path, "wb") as f:
+                        f.write(transcript_video_file.read())
+
+                    try:
+                        # Run Transcript Agent
+                        agent = TranscriptAgent()
+
+                        episode_info = {}
+                        if episode_title:
+                            episode_info['title'] = episode_title
+                        if episode_guest:
+                            episode_info['guest'] = episode_guest
+
+                        formatted_output, cleaned_transcript, raw_transcript = agent.run_full_pipeline(
+                            temp_video_path,
+                            episode_info=episode_info if episode_info else None
+                        )
+
+                        if formatted_output:
+                            st.success("✅ Transcript nettoyé généré avec succès!")
+
+                            # Display cleaned transcript
+                            st.markdown("### ✨ Transcript Nettoyé (Prêt pour Publication)")
+                            st.text_area(
+                                "Transcript nettoyé",
+                                formatted_output,
+                                height=500
+                            )
+
+                            # Download button
+                            st.download_button(
+                                label="📥 Télécharger le transcript nettoyé (.txt)",
+                                data=formatted_output,
+                                file_name=f"transcript_{episode_title.replace(' ', '_') if episode_title else 'episode'}.txt",
+                                mime="text/plain"
+                            )
+
+                            # Show raw transcript in expander
+                            with st.expander("📄 Voir le transcript brut (avant nettoyage)"):
+                                st.text_area(
+                                    "Transcript brut",
+                                    raw_transcript,
+                                    height=400
+                                )
+
+                        else:
+                            st.error("❌ Échec de la génération du transcript")
+
+                    except Exception as e:
+                        st.error(f"❌ Erreur: {str(e)}")
+
+                    finally:
+                        # Cleanup
+                        if os.path.exists(temp_video_path):
+                            os.remove(temp_video_path)
+            else:
+                st.warning("⚠️ Veuillez télécharger une vidéo d'abord")
+
+    # TAB 4: PREP AGENT
+    with tab4:
         st.header("📚 Prep Agent")
         st.markdown("Préparez vos interviews avec des ressources ciblées et prioritisées")
 
@@ -308,8 +447,8 @@ def main():
             else:
                 st.warning("⚠️ Veuillez entrer le nom d'un invité")
 
-    # TAB 4: ANALYTICS AGENT
-    with tab4:
+    # TAB 5: ANALYTICS AGENT
+    with tab5:
         st.header("📊 Analytics Agent")
         st.markdown("Analysez les performances de vos épisodes et identifiez des patterns")
 
