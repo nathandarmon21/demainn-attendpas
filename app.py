@@ -165,13 +165,13 @@ def main():
     # ========================================
     st.markdown("## 📤 Télécharger votre épisode")
 
-    st.info("💡 **Limite de taille:** Jusqu'à 5 GB. Les fichiers volumineux prendront plus de temps à traiter (env. 10-20 min pour un épisode de 2-4 heures).")
+    st.info("💡 **Limite de taille:** Jusqu'à 10 GB. Les fichiers volumineux prendront plus de temps à traiter (env. 10-20 min pour un épisode de 2-4 heures).")
 
     video_file = st.file_uploader(
         "Téléchargez votre vidéo ou audio d'épisode (tous les agents utiliseront ce fichier)",
         type=['mp4', 'mp3', 'mov'],
         key="centralized_video_upload",
-        help="Formats acceptés: MP4, MP3, MOV. Taille max: 5000 MB"
+        help="Formats acceptés: MP4, MP3, MOV. Taille max: 10000 MB"
     )
 
     # Process uploaded video
